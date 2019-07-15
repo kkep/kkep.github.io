@@ -105,7 +105,7 @@ var McDatesComponemt = (function () {
         };
         this.controller = McDatesController_1.McDatesController;
         this.controllerAS = "$ctrl";
-        this.template = "\n            <div style=\"width:400px;right:0;left:0;margin:auto;\">\n                <div layout=\"row\" layout-align=\"space-around\">\n                    <div flex-xs layout-align=\"center\">\n                        <h4>\u0441</h4>\n                        <md-datepicker ng-disabled=\"$ctrl.selectedInterval==0||$ctrl.selectedInterval==1\" ng-model=\"$ctrl.dir.dateFrom\" md-is-open=\"$ctrl.isOpenDF\" md-placeholder=\"Enter date\"\n                            md-max-date=\"$ctrl.dir.dateTo\" ng-change=\"$ctrl.dir.mcChange()\"></md-datepicker>\n                    </div>\n                    <div flex-xs layout-align=\"center\">\n                        <h4>\u043F\u043E</h4>\n                        <md-datepicker ng-disabled=\"$ctrl.selectedInterval==0||$ctrl.selectedInterval==1\" ng-model=\"$ctrl.dir.dateTo\" md-is-open=\"$ctrl.isOpenDT\" md-placeholder=\"Enter date\"\n                            md-min-date=\"$ctrl.dir.dateFrom\" ng-change=\"$ctrl.dir.mcChange()\"></md-datepicker>\n                    </div>\n                </div>\n                <div layout=\"row\" layout-align=\"space-around\">\n                    <span class=\"md-caption\" ng-class=\"{'md-body-2': $ctrl.selectedInterval==0}\" ng-click=\"$ctrl.setInterval(0)\">\u0412\u0447\u0435\u0440\u0430</span>\n                    <span class=\"md-caption\" ng-class=\"{'md-body-2': $ctrl.selectedInterval==1}\" ng-click=\"$ctrl.setInterval(1)\">\u0421\u0435\u0433\u043E\u0434\u043D\u044F</span>\n                    <span class=\"md-caption\" ng-class=\"{'md-body-2': $ctrl.selectedInterval==2}\" ng-click=\"$ctrl.setInterval(2)\">2 \u043D\u0435\u0434\u0435\u043B\u0438</span>\n                    <span class=\"md-caption\" ng-class=\"{'md-body-2': $ctrl.selectedInterval==3}\" ng-click=\"$ctrl.setInterval(3)\">\u041C\u0435\u0441\u044F\u0446</span>\n                    <span class=\"md-caption\" ng-class=\"{'md-body-2': $ctrl.selectedInterval==4}\" ng-click=\"$ctrl.setInterval(4)\">\u0412\u0441\u0435</span>\n                </div>\n            </div>\n        ";
+        this.template = "\n            <div style=\"width:400px;right:0;left:0;margin:auto;\">\n                <div layout=\"row\" layout-align=\"space-around\">\n                    <div flex-xs layout-align=\"center\">\n                        <h4>\u0441</h4>\n                        <md-datepicker ng-disabled=\"$ctrl.selectedInterval==0||$ctrl.selectedInterval==1\" ng-model=\"$ctrl.dir.dateFrom\" md-is-open=\"$ctrl.isOpenDF\" md-placeholder=\"Enter date\"\n                            md-max-date=\"$ctrl.dir.dateTo\"></md-datepicker>\n                    </div>\n                    <div flex-xs layout-align=\"center\">\n                        <h4>\u043F\u043E</h4>\n                        <md-datepicker ng-disabled=\"$ctrl.selectedInterval==0||$ctrl.selectedInterval==1\" ng-model=\"$ctrl.dir.dateTo\" md-is-open=\"$ctrl.isOpenDT\" md-placeholder=\"Enter date\"\n                            md-min-date=\"$ctrl.dir.dateFrom\"></md-datepicker>\n                    </div>\n                </div>\n                <div layout=\"row\" layout-align=\"space-around\">\n                    <span class=\"md-caption\" ng-class=\"{'md-body-2': $ctrl.selectedInterval==0}\" ng-click=\"$ctrl.setInterval(0)\">\u0412\u0447\u0435\u0440\u0430</span>\n                    <span class=\"md-caption\" ng-class=\"{'md-body-2': $ctrl.selectedInterval==1}\" ng-click=\"$ctrl.setInterval(1)\">\u0421\u0435\u0433\u043E\u0434\u043D\u044F</span>\n                    <span class=\"md-caption\" ng-class=\"{'md-body-2': $ctrl.selectedInterval==2}\" ng-click=\"$ctrl.setInterval(2)\">2 \u043D\u0435\u0434\u0435\u043B\u0438</span>\n                    <span class=\"md-caption\" ng-class=\"{'md-body-2': $ctrl.selectedInterval==3}\" ng-click=\"$ctrl.setInterval(3)\">\u041C\u0435\u0441\u044F\u0446</span>\n                    <span class=\"md-caption\" ng-class=\"{'md-body-2': $ctrl.selectedInterval==4}\" ng-click=\"$ctrl.setInterval(4)\">\u0412\u0441\u0435</span>\n                </div>\n            </div>\n        ";
     }
     return McDatesComponemt;
 }());
@@ -179,7 +179,8 @@ var McDatesController = (function () {
     function McDatesController($scope, $attrs) {
         var _this = this;
         this.$scope = $scope;
-        var callback = function () {
+        var callback = function (from, to, p) {
+            if (p === void 0) { p = false; }
             if (_this.isOpenDF || _this.isOpenDT) {
                 if (_this.dir.dateFrom) {
                     var date = moment(_this.dir.dateFrom, 'YYYY-MM-DD', true).format('YYYY-MM-DDThh:mm:ss');
@@ -195,6 +196,9 @@ var McDatesController = (function () {
                     _this.dir.dateFrom = moment(_this.dir.dateFrom).format('YYYY-MM-DD');
                 if (_this.dir.dateTo)
                     _this.dir.dateTo = moment(_this.dir.dateTo).format('YYYY-MM-DD');
+                if (p && from != undefined) {
+                    _this.onChange();
+                }
             }
         };
         this.$scope.$watch('$ctrl.isOpenDF', callback);
@@ -209,20 +213,20 @@ var McDatesController = (function () {
                             case IntervalTypeEnum_1.IntervalType.Yesterday:
                                 _this.dir.dateFrom = new Date(moment(from).add(1, 'days').format('YYYY-MM-DDThh:mm:ss'));
                                 _this.dir.dateTo = _this.dir.dateFrom;
-                                callback();
+                                callback(null, null, true);
                                 break;
                             case IntervalTypeEnum_1.IntervalType.Today:
                                 _this.dir.dateFrom = new Date();
                                 _this.dir.dateTo = new Date();
-                                callback();
+                                callback(null, null, true);
                                 break;
                             case IntervalTypeEnum_1.IntervalType.WWeek:
                                 _this.dir.dateTo = new Date(moment(from).add(14, 'days').format('YYYY-MM-DDThh:mm:ss'));
-                                callback();
+                                callback(null, null, true);
                                 break;
                             case IntervalTypeEnum_1.IntervalType.Month:
                                 _this.dir.dateTo = new Date(moment(from).add(1, 'month').format('YYYY-MM-DDThh:mm:ss'));
-                                callback();
+                                callback(null, null, true);
                         }
                     }
                 }
@@ -238,20 +242,20 @@ var McDatesController = (function () {
                             case IntervalTypeEnum_1.IntervalType.Yesterday:
                                 _this.dir.dateFrom = new Date(moment(from).add(1, 'days').format('YYYY-MM-DDThh:mm:ss'));
                                 _this.dir.dateTo = _this.dir.dateFrom;
-                                callback();
+                                callback(null, null, true);
                                 break;
                             case IntervalTypeEnum_1.IntervalType.Today:
                                 _this.dir.dateFrom = new Date();
                                 _this.dir.dateTo = new Date();
-                                callback();
+                                callback(null, null, true);
                                 break;
                             case IntervalTypeEnum_1.IntervalType.WWeek:
                                 _this.dir.dateFrom = new Date(moment(from).subtract(13, 'days').format('YYYY-MM-DDThh:mm:ss'));
-                                callback();
+                                callback(null, null, true);
                                 break;
                             case IntervalTypeEnum_1.IntervalType.Month:
                                 _this.dir.dateFrom = new Date(moment(from).subtract(1, 'month').format('YYYY-MM-DDThh:mm:ss'));
-                                callback();
+                                callback(null, null, true);
                         }
                     }
                 }
@@ -259,9 +263,13 @@ var McDatesController = (function () {
         });
     }
     McDatesController.prototype.$onInit = function () {
+        console.log(234234);
         if (!util_1.isFunction(this.dir.mcChange)) {
             throw new Error('mc-chage parametr is not a function');
         }
+    };
+    McDatesController.prototype.onChange = function () {
+        this.dir.mcChange(this.dir.dateFrom, this.dir.dateTo);
     };
     McDatesController.prototype.setInterval = function (type) {
         this.selectedInterval = type == this.selectedInterval ? null : type;
@@ -290,7 +298,7 @@ var McDatesController = (function () {
                 this.dir.dateTo = null;
                 break;
         }
-        return this;
+        this.onChange();
     };
     return McDatesController;
 }());
@@ -315,8 +323,8 @@ var SomeController = (function () {
         this.date_to = '2019-07-05';
     }
     SomeController.prototype.$onInit = function () { };
-    SomeController.prototype.change = function () {
-        alert(this.date_from + "  " + this.date_to);
+    SomeController.prototype.change = function (dateFrom, dateTo) {
+        alert(dateFrom + "  " + dateTo);
     };
     return SomeController;
 }());
